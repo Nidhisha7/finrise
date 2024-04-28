@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="author" content="Untree.co">
+  <link rel="shortcut icon" href="favicon.png">
+  <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <title>FinRise - Report Generator</title>
+</head>
+
+<form action="/report_gen" method="post">
+  <div class="form-group">
+      <label for="month">Month:</label>
+      <select id="month" name="month" class="form-control">
+          <option value="January">January</option>
+          <option value="February">February</option>
+          <option value="March">March</option>
+          <option value="April">April</option>
+          <option value="May">May</option>
+          <option value="June">June</option>
+          <option value="July">July</option>
+          <option value="August">August</option>
+          <option value="September">September</option>
+          <option value="October">October</option>
+          <option value="November">November</option>
+          <option value="December">December</option>
+      </select>
+  </div>
+  <div class="form-group">
+      <label for="year">Year:</label>
+      <select id="year" name="year" class="form-control">
+          <!-- Dynamically generate year options or hard-code them -->
+          {% for year in range(2024, 2034) %}
+          <option value="{{ year }}">{{ year }}</option>
+          {% endfor %}
+      </select>
+  </div>
+  <div class="text-center mt-3">
+      <button type="button" class="btn btn-secondary me-2" id="reportbtn">Show Expenses</button>
+       </div>  
+  </div>
+
+    <!-- Message Container initially hidden -->
+    <div id="messageContainer" style="display: none;">
+      <br>
+            <h1>Financial Report for {{ month }} {{ year }}</h1>
+                <br>
+                <h2>User Financial Information</h2>
+                <table style="width: 40%;">
+                    <thead>
+                        <tr>
+                            <th>Financial Goal</th>
+                            <th>Time Period</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ financial_info[1] }}</td> <!-- Financial Goal -->
+                            <td>{{ financial_info[2] }}</td> <!-- Time Period -->
+                        </tr>
+                    </tbody>
+                </table>
+                    <br>
+                    <h2>Expenses Data</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Income</th>
+                                <th>Vacation</th>
+                                <th>Daily Transportation</th>
+                                <th>Utilities</th>
+                                <th>Savings</th>
+                                <th>Housing</th>
+                                <th>Debt Payments</th>
+                                <th>Healthcare</th>
+                                <th>Personal Care</th>
+                                <th>Food</th>
+                                <th>Insurance</th>
+                                <th>Education</th>
+                                <th>Entertainment</th>
+                                <th>Charity</th>
+                                <th>Taxes</th>
+                                <th>Miscellaneous</th>
+                                <!-- Add remaining expense columns here -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in expenses_data %}
+                                <tr>
+                                    <td>{{ row[1] }}</td> <!-- Income -->
+                                    <td>{{ row[4] }}</td> <!-- Vacation -->
+                                    <td>{{ row[5] }}</td> <!-- Daily Transportation -->
+                                    <td>{{ row[6] }}</td> <!-- Utilities -->
+                                    <td>{{ row[7] }}</td> <!-- Savings -->
+                                    <td>{{ row[8] }}</td> <!-- Housing -->
+                                    <td>{{ row[9] }}</td> <!-- Debt Payments -->
+                                    <td>{{ row[10] }}</td> <!-- Healthcare -->
+                                    <td>{{ row[11] }}</td> <!-- Personal Care -->
+                                    <td>{{ row[12] }}</td> <!-- Food -->
+                                    <td>{{ row[13] }}</td> <!-- Insurance -->
+                                    <td>{{ row[14] }}</td> <!-- Education -->
+                                    <td>{{ row[15] }}</td> <!-- Entertainment -->
+                                    <td>{{ row[16] }}</td> <!-- Charity -->
+                                    <td>{{ row[17] }}</td> <!-- Taxes -->
+                                    <td>{{ row[18] }}</td> <!-- Miscellaneous -->
+                                    <!-- Add remaining expense fields here -->
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div>
+                      <br>
+                      {% if max_category %}
+                          <h2>Expense category in which the spending can be reduced is {{ max_category }}.</h2>
+                      {% else %}
+                          <h2>No overspending.</h2>
+                      {% endif %}
+                      <br>
+                      {% if remaining > 0 %}
+                          <h2>Rs {{ remaining }} remaining to achieve.</h2>
+                      {% elif remaining == 0 %}
+                          <h2>Financial goal achieved!</h2>
+                      {% else %}
+                          <h2>Financial goal achieved!</h2>
+                          <h2>Excess savings: Rs {{ -remaining }}</h2>
+                      {% endif %}
+                  </div>
+    </div>
+  </div>
+  
+  <script>
+    document.getElementById('reportbtn').addEventListener('click', function() {
+        var month = document.getElementById('month').value;
+        var year = document.getElementById('year').value;
+        var messageContainer = document.getElementById('messageContainer');
+    
+        if (month !== '' && year !== '') {
+            messageContainer.style.display = 'block';
+        } else {
+            alert('Please select a month and a year.');
+        }
+    });
+  </script>
+
+  <script src="/static/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="author" content="Untree.co">
+  <link rel="shortcut icon" href="favicon.png">
+
+  <meta name="description" content="" />
+  <meta name="keywords" content="bootstrap, bootstrap4" />
+
+  <!-- Bootstrap CSS -->
+  <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link href="/static/css/tiny-slider.css" rel="stylesheet">
+  <link href="/static/css/style.css" rel="stylesheet">
+  <title>FinRise</title>
+</head>
+
+<body>
+  <!-- Start Header/Navigation -->
+  <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Furni navigation bar">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">FinRise<span>.</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarsFurni">
+        <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
+          <li class="nav-item active" id="homeNavItem">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item" id="inputNavItem">
+            <a class="nav-link" href="/input">Expense Entry</a>
+          </li>
+          <li class="nav-item" id="servicesNavItem">
+            <a class="nav-link" href="/update">Expense Updation</a>
+          </li>
+          <li class="nav-item" id="contactNavItem">
+            <a class="nav-link" href="/report">Report</a>
+          </li>
+        </ul>
+
+        <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
+          <li id="userContainer"></li>
+          {% if not session['email'] %}
+            <li><a class="nav-link" href="#"><img src="/static/images/user.svg"></a></li><!-- Display user icon -->
+          {% else %}
+            <li><a class="nav-link" href="#"><i class="fas fa-user"></i> {{ session['email'] }}</a></li> <!-- Display email -->
+            <li><a class="nav-link" href="/logout">Logout</a></li> <!-- Logout button -->
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+    <form action="/update" method="POST">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="form-group">
+            <label for="month">Month:</label>
+            <select id="month" name="month">
+              <option value="January">January</option>
+              <option value="February">February</option>
+              <option value="March">March</option>
+              <option value="April">April</option>
+              <option value="May">May</option>
+              <option value="June">June</option>
+              <option value="July">July</option>
+              <option value="August">August</option>
+              <option value="September">September</option>
+              <option value="October">October</option>
+              <option value="November">November</option>
+              <option value="December">December</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <label for="year">Year:</label>
+            <select id="year" name="year">
+              {% for year in range(2024, 2034) %}
+              <option value="{{ year }}">{{ year }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </div>
+    </form>
+    <div id="expensesContainer" style="display: none;">
+      <div class="container mt-5">
+        <div class="row">
+          <div class="col-md-3">
+            <div class="form-group">
+              <label class="expense-label" for="timePeriod">Time Period (in months):</label>
+              <input type="number" class="form-control" name="timePeriod" id="timePeriod" value="{{ time_period }}">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label class="expense-label" for="financialGoal">Financial Goal:</label>
+              <input type="number" class="form-control" name="financialGoal" id="financialGoal" value="{{ financial_goal }}">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <label class="expense-label" for="Income">Income:</label>
+              <input type="number" class="form-control" name="Income" id="Income" value="{{ income}}">
+            </div>
+          </div>
+          <br>
+          <h2>Expenses</h2>
+                  <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="expense-label" for="Vacation">Vacation:</label>
+                            <input type="number" class="form-control" name="vacation" id="vacation" value="{{ vacation }}">
+                        </div>
+                        <label for="Vacation-importance">Importance:</label>
+                        <select id="Vacation-importance" name="Vacation-importance">
+                            <option value="1" {% if vacation_importance == 1 %} selected {% endif %}>Low</option>
+                            <option value="2" {% if vacation_importance == 2 %} selected {% endif %}>Medium</option>
+                            <option value="3" {% if vacation_importance == 3 %} selected {% endif %}>High</option>
+                        </select><br>                        
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="expense-label" for="daily-transportation">Daily Transportation:</label>
+                            <input type="number" class="form-control" name="daily-transportation" id="daily-transportation" value="{{ daily_transportation }}">
+                        </div>
+                        <label for="daily-transportation-importance">Importance:</label>
+                        <select id="daily-transportation-importance" name="daily-transportation-importance">
+                            <option value="1" {% if daily_transportation_importance == 1 %} selected {% endif %}>Low</option>
+                            <option value="2" {% if daily_transportation_importance == 2 %} selected {% endif %}>Medium</option>
+                            <option value="3" {% if daily_transportation_importance == 3 %} selected {% endif %}>High</option>
+                        </select><br>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="expense-label" for="utilities">Utilities:</label>
+                            <input type="number" class="form-control" name="utilities" id="utilities" value="{{ utilities }}">
+                        </div>
+                        <label for="utilities-importance">Importance:</label>
+                        <select id="utilities-importance" name="utilities-importance">
+                            <option value="1" {% if utilities_importance== 1 %} selected {% endif %}>Low</option>
+                            <option value="2" {% if utilities_importance== 2 %} selected {% endif %}>Medium</option>
+                            <option value="3" {% if utilities_importance == 3 %} selected {% endif %}>High</option>
+                        </select><br>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="expense-label" for="savings">Savings:</label>
+                            <input type="number" class="form-control" name="savings" id="savings" value="{{ savings }}">
+                        </div>
+                        <select id="savings-importance" name="savings-importance">
+                          <option value="1" {% if savings_importance == 1 %} selected {% endif %}>Low</option>
+                          <option value="2" {% if savings_importance== 2 %} selected {% endif %}>Medium</option>
+                          <option value="3" {% if savings_importance== 3 %} selected {% endif %}>High</option>
+                        </select><br>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="expense-label" for="housing">Housing:</label>
+                                <input type="number" class="form-control" name="housing" id="housing" value="{{ housing }}">
+                            </div>
+                            <label for="housing-importance">Importance:</label>
+                            <select id="housing-importance" name="housing-importance">
+                                <option value="1" {% if housing_importance== 1 %} selected {% endif %}>Low</option>
+                                <option value="2" {% if housing_importance == 2 %} selected {% endif %}>Medium</option>
+                                <option value="3" {% if housing_importance == 3 %} selected {% endif %}>High</option>
+                            </select><br>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                              <label class="expense-label" for="debt-payments">Debt Payments:</label>
+                              <input type="number" class="form-control" name="debt-payments" id="debt-payments" value="{{ debt_payments }}">
+                          </div>
+                          <label for="debt-payments-importance">Importance:</label>
+                          <select id="debt-payments-importance" name="debt-payments-importance">
+                              <option value="1" {% if debt_payments_importance == 1 %} selected {% endif %}>Low</option>
+                              <option value="2" {% if debt_payments_importance == 2 %} selected {% endif %}>Medium</option>
+                              <option value="3" {% if debt_payments_importance == 3 %} selected {% endif %}>High</option>
+                          </select><br>
+                      </div>
+                      <div class="col-md-3">
+                          <div class="form-group">
+                              <label class="expense-label" for="healthcare">Healthcare:</label>
+                              <input type="number" class="form-control" name="healthcare" id="healthcare" value="{{ healthcare}}">
+                          </div>
+                          <label for="healthcare-importance">Importance:</label>
+                          <select id="healthcare-importance" name="healthcare-importance">
+                              <option value="1" {% if healthcare_importance == 1 %} selected {% endif %}>Low</option>
+                              <option value="2" {% if healthcare_importance == 2 %} selected {% endif %}>Medium</option>
+                              <option value="3" {% if healthcare_importance == 3 %} selected {% endif %}>High</option>
+                          </select><br>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="expense-label" for="personal-care">Personal Care:</label>
+                            <input type="number" class="form-control" name="personal-care" id="personal-care" value="{{ personal_care }}">
+                        </div>
+                        <label for="personal-care-importance">Importance:</label>
+                        <select id="personal-care-importance" name="personal-care-importance">
+                            <option value="1" {% if personal_care_importance == 1 %} selected {% endif %}>Low</option>
+                            <option value="2" {% if personal_care_importance == 2 %} selected {% endif %}>Medium</option>
+                            <option value="3" {% if personal_care_importance == 3 %} selected {% endif %}>High</option>
+                        </select><br>
+                    </div>
+                      <div class="col-md-3">
+                          <div class="form-group">
+                              <label class="expense-label" for="food">Food:</label>
+                              <input type="number" class="form-control" name="food" id="food" value="{{ food }}">
+                          </div>
+                          <label for="food-importance">Importance:</label>
+                          <select id="food-importance" name="food-importance">
+                              <option value="1" {% if food_importance == 1 %} selected {% endif %}>Low</option>
+                              <option value="2" {% if food_importance == 2 %} selected {% endif %}>Medium</option>
+                              <option value="3" {% if food_importance == 3 %} selected {% endif %}>High</option>
+                          </select><br>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="expense-label" for="insurance">Insurance:</label>
+                                <input type="number" class="form-control" name="insurance" id="insurance" value="{{ insurance }}">
+                            </div>
+                            <label for="insurance-importance">Importance:</label>
+                            <select id="insurance-importance" name="insurance-importance">
+                                <option value="1" {% if insurance_importance == 1 %} selected {% endif %}>Low</option>
+                                <option value="2" {% if insurance_importance == 2 %} selected {% endif %}>Medium</option>
+                                <option value="3" {% if insurance_importance == 3 %} selected {% endif %}>High</option>
+                            </select><br>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="expense-label" for="education">Education:</label>
+                                <input type="number" class="form-control" name="education" id="education" value="{{ education }}">
+                            </div>
+                            <label for="education-importance">Importance:</label>
+                            <select id="education-importance" name="education-importance">
+                                <option value="1" {% if education_importance == 1 %} selected {% endif %}>Low</option>
+                                <option value="2" {% if education_importance == 2 %} selected {% endif %}>Medium</option>
+                                <option value="3" {% if education_importance== 3 %} selected {% endif %}>High</option>
+                            </select><br>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                              <label class="expense-label" for="entertainment">Entertainment:</label>
+                              <input type="number" class="form-control" name="entertainment" id="entertainment" value="{{ entertainment }}">
+                          </div>
+                          <label for="entertainment-importance">Importance:</label>
+                          <select id="entertainment-importance" name="entertainment-importance">
+                              <option value="1" {% if entertainment_importance == 1 %} selected {% endif %}>Low</option>
+                              <option value="2" {% if entertainment_importance== 2 %} selected {% endif %}>Medium</option>
+                              <option value="3" {% if entertainment_importance == 3 %} selected {% endif %}>High</option>
+                          </select><br>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="expense-label" for="charity">Charity:</label>
+                            <input type="number" class="form-control" name="charity" id="charity" value="{{ charity }}">
+                        </div>
+                        <label for="charity-importance">Importance:</label>
+                        <select id="charity-importance" name="charity-importance">
+                            <option value="1" {% if charity_importance == 1 %} selected {% endif %}>Low</option>
+                            <option value="2" {% if charity_importance == 2 %} selected {% endif %}>Medium</option>
+                            <option value="3" {% if charity_importance == 3 %} selected {% endif %}>High</option>
+                        </select><br>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="expense-label" for="taxes">Taxes:</label>
+                            <input type="number" class="form-control" name="taxes" id="taxes" value="{{ taxes}}">
+                        </div>
+                        <label for="taxes-importance">Importance:</label>
+                        <select id="taxes-importance" name="taxes-importance">
+                            <option value="1" {% if taxes_importance== 1 %} selected {% endif %}>Low</option>
+                            <option value="2" {% if taxes_importance== 2 %} selected {% endif %}>Medium</option>
+                            <option value="3" {% if taxes_importance == 3 %} selected {% endif %}>High</option>
+                        </select><br>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="expense-label" for="miscellaneous">Miscellaneous:</label>
+                            <input type="number" class="form-control" name="miscellaneous" id="miscellaneous" value="{{miscellaneous }}">
+                        </div>
+                        <label for="miscellaneous-importance">Importance:</label>
+                        <select id="miscellaneous-importance" name="miscellaneous-importance">
+                            <option value="1" {% if miscellaneous_importance == 1 %} selected {% endif %}>Low</option>
+                            <option value="2" {% if miscellaneous_importance == 2 %} selected {% endif %}>Medium</option>
+                            <option value="3" {% if miscellaneous_importance == 3 %} selected {% endif %}>High</option>
+                        </select><br>
+                    </div>
+                </div>
+              </div>
+              <div class="text-center mt-3">
+                <button class="btn btn-secondary" type="submit">Update Expenses</button>
+              </div>
+ 
+  </div>
+
+  <script src="/static/js/bootstrap.bundle.min.js"></script>
+  <script src="/static/js/tiny-slider.js"></script>
+  <script src="/static/js/custom.js"></script>
+</body>
+</html>
